@@ -5,6 +5,8 @@
 using namespace std;
 using namespace cv;
 
+#define BKGROUND 140
+
 int main(int argc, char **argv)
 {
     Mat image, mask;
@@ -63,12 +65,50 @@ int main(int argc, char **argv)
             floodFill(image, p, 0);
         }
     }
-
+    imshow("image", image);
+    waitKey();
     // mudar o fundo
-    floodFill(image, cvPoint(0, 0), 140);
-
+    floodFill(image, cvPoint(0, 0), BKGROUND);
+    imshow("image", image);
+    waitKey();
+    // encontrando buracos
+    for (int row = 0; row < height; row++)
+    {
+        for (int col = 0; col < width; col++)
+        {
+            if (image.at<uchar>(row, col) == 0)
+            {
+                if (image.at<uchar>(row, col - 1) == 255)
+                {
+                    // achou um buraco
+                    nholes++;
+                    p.x = col - 1;
+                    p.y = row;
+                    floodFill(image, p, BKGROUND);
+                }
+                p.x = col;
+                p.y = row;
+                floodFill(image, p, BKGROUND);
+            }
+        }
+    }
+    // encontrando regioes
+    for (int row = 1; row < height; row++)
+    {
+        for (int col = 1; col < width; col++)
+        {
+            if (image.at<uchar>(row, col) == 255)
+            {
+                nobjects++;
+                p.x = col;
+                p.y = row;
+                floodFill(image, p, BKGROUND);
+            }
+        }
+    }
     imshow("image", image);
     imwrite("labeling.png", image);
+    cout << "nholes = " << nholes << endl;
     cout << "nobjects = " << nobjects << endl;
     waitKey();
     return 0;
