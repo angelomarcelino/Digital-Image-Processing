@@ -1,0 +1,34 @@
+:source-highlighter: pygments
+:toc: left
+:stem:
+:listing-caption: Listing
+:icons: font
+
+= Processamento Digital de Imagens
+
+Angelo Marcelino Cordeiro
+
+amc.marcelino.cordeiro@gmail.com
+
+Página desenvolvida como decumentação para os projetos desenvolvidos durante a disciplina DCA0445 - PROCESSAMENTO DIGITAL DE IMAGENS.
+
+Link para o tutorial de opencv: https://agostinhobritojr.github.io/tutorial/pdi/[Introdução ao processamento digital de imagens com OpenCV^].
+
+== 1 Primeira unidade
+
+Neste tópico estão descritos as atividades realizadas referentes a primeira unidade da disciplina DCA0445.
+
+=== 1.1 Regiões
+
+Este código tem a função de um programa que recebe do usuário dois pontos P1 e P2 e verifica se os pontos fornecidos estão dentro da imagem. Em seguida delimita-se a região definida pelo retângulo de vértices opostos definidos pelos pontos P1 e P2 na qual é exibido o negativo da imagem efeito esse alcançado subtraindo 255 do valor de cada pixel que compõe o retângulo. 
+
+O código fonte link:../atividades/regions.cpp[regions.cpp^] está está descrito abaixo:
+
+[source, c++]
+----
+include::../atividades/regions.cpp[]
+----
+
+=== 1.2 Trocar regiões
+
+A partir do código 
