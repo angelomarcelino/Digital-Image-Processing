@@ -8,7 +8,7 @@ Angelo Marcelino <amc.marcelino.cordeiro@gmail.com>
 
 Página desenvolvida como decumentação para os projetos desenvolvidos durante a disciplina DCA0445 - PROCESSAMENTO DIGITAL DE IMAGENS.
 
-Link para as atividades: https://agostinhobritojr.github.io/tutorial/pdi/[^atividades]
+Link para as atividades: https://agostinhobritojr.github.io/tutorial/pdi/[atividades^]
 
 == Origins
 
