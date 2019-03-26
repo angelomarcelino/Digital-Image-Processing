@@ -83,4 +83,4 @@ image::../atividades/windows_live_square.jpg[Entrada do programa,role="left"]
 [#saida-trocaregioes]
 image::../atividades/regioestrocadas.png[Saída do programa,role="left"]
 
-== 1.3. Preenchendo regiões
+=== 1.3. Preenchendo regiões
