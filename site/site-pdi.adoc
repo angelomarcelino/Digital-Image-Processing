@@ -14,21 +14,73 @@ Página desenvolvida como decumentação para os projetos desenvolvidos durante 
 
 Link para o tutorial de opencv: https://agostinhobritojr.github.io/tutorial/pdi/[Introdução ao processamento digital de imagens com OpenCV^].
 
-== 1 Primeira unidade
+== 1. Primeira unidade
 
 Neste tópico estão descritos as atividades realizadas referentes a primeira unidade da disciplina DCA0445.
+Para a compilação dos códigos referentes à esta unidade, é necessário possuir, no mesmo diretório do arquivo `_.cpp_` o arquivo link:../atividades/Makefile[Makefile^], e executar os seguintes comandos no seu console:
 
-=== 1.1 Regiões
+._Makefile_
+[source, shell]
+----
+$ make <nome_arquivo>
+$ ./<nome_arquivo> <caminho_para_imagem>
+----
+
+=== 1.1. Regiões
 
 Este código tem a função de um programa que recebe do usuário dois pontos P1 e P2 e verifica se os pontos fornecidos estão dentro da imagem. Em seguida delimita-se a região definida pelo retângulo de vértices opostos definidos pelos pontos P1 e P2 na qual é exibido o negativo da imagem efeito esse alcançado subtraindo 255 do valor de cada pixel que compõe o retângulo. 
 
 O código fonte link:../atividades/regions.cpp[regions.cpp^] está está descrito abaixo:
 
 [source, c++]
+._regions.cpp_
 ----
 include::../atividades/regions.cpp[]
 ----
 
-=== 1.2 Trocar regiões
+A seguir estão as imagens de entrada do código acima:
 
-A partir do código 
+.Entrada do programa
+[#entrada-regions]
+image::../atividades/person-smartphone-office-table.jpeg[Entrada do programa,300,200,role="left"] 
+.Conversão para grayscale
+[#grayscale-regions]
+image::../atividades/grayscale.png[Converção tom de cinza,300,200,role="center"]
+
+.
+
+.Negativo com RGB
+[#negativo-rgb-regions]
+image::../atividades/negativo_color.png[Negativo com RGB,300,200,role="left"]
+.Negativo do grayscale
+[#negativo-grayscale-regions]
+image::../atividades/negativo_grayscale.png[Negativo de grayscale,300,200]
+
+.
+
+=== 1.2. Trocar regiões
+
+A atividade propõe a construção de um programa que recebe uma imagem, determina e troca os quadrantes diagonalmente numa imagem de saída. Para resolver este problema foi seguido o seguinte algoritmo:
+
+* Obtêm-se os quadrantes da imagem defindo o tamanho da _grid_ como metade da 
+altura e largura da imagem, e utilizando o construtor da classe `_Rect_`, seleciona um retângulo da matriz igual ao quadrante selecionado.
+* Com o construtor da classe `_Mat_`, copia-se cada quadrante para uma matriz separada. 
+* Por fim, concatenam-se os quadrantes utilizando as funções `_vconcat()_` e `_hconcat()_` na imagem, como descreve o código link:../atividades/trocaregioes.cpp[trocaregioes.cpp^] abaixo:
+
+[source, c++]
+._trocaregioes.cpp_
+----
+include::../atividades/trocaregioes.cpp[]
+----
+
+A seguir estão exemplos de imagens de entrada e saída do código acima:
+
+.Entrada do programa
+[#entrada-trocaregioes]
+image::../atividades/windows_live_square.jpg[Entrada do programa,role="left"] 
+
+.Saída com regiões trocadas
+[#saida-trocaregioes]
+image::../atividades/regioestrocadas.png[Saída do programa,role="left"]
+
+== 1.3. Preenchendo regiões

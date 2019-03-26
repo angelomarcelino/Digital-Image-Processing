@@ -20,21 +20,22 @@ int main(int argc, char **argv)
     imshow("janela", image);
     cout << image.rows << " " << image.cols << endl;
     waitKey();
-    
-    rect = Rect(Point(0,0), Point(image.rows/2, image.cols/2));
-    A = Mat(image,rect);
-    rect = Rect(Point(0,image.cols/2), Point(image.rows/2, image.cols));
-    B = Mat(image,rect);
-    rect = Rect(Point(image.rows/2,0), Point(image.rows, image.cols/2));
-    C = Mat(image,rect);
-    rect = Rect(Point(image.rows/2, image.cols/2), Point(image.rows, image.cols));
-    D = Mat(image,rect);
+
+    rect = Rect(Point(0, 0), Point(image.rows / 2, image.cols / 2));
+    A = Mat(image, rect);
+    rect = Rect(Point(0, image.cols / 2), Point(image.rows / 2, image.cols));
+    B = Mat(image, rect);
+    rect = Rect(Point(image.rows / 2, 0), Point(image.rows, image.cols / 2));
+    C = Mat(image, rect);
+    rect = Rect(Point(image.rows / 2, image.cols / 2), Point(image.rows, image.cols));
+    D = Mat(image, rect);
 
     vconcat(B, A, Vab);
     vconcat(D, C, Vcd);
     hconcat(Vcd, Vab, image);
     imshow("janela", image);
+    imwrite("regioestrocadas.png", image);
     waitKey();
-    
+
     return 0;
 }

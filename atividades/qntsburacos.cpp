@@ -70,6 +70,7 @@ int main(int argc, char **argv)
     // mudar o fundo
     floodFill(image, cvPoint(0, 0), BKGROUND);
     imshow("image", image);
+    imwrite("bolhas_fundo.png", image);
     waitKey();
     // encontrando buracos
     for (int row = 0; row < height; row++)
@@ -92,6 +93,9 @@ int main(int argc, char **argv)
             }
         }
     }
+    imshow("image", image);
+    imwrite("bolhas_semburacos.png", image);
+    waitKey();
     // encontrando regioes
     for (int row = 1; row < height; row++)
     {
@@ -107,7 +111,7 @@ int main(int argc, char **argv)
         }
     }
     imshow("image", image);
-    imwrite("labeling.png", image);
+    imwrite("bolhas_result.png", image);
     cout << "nholes = " << nholes << endl;
     cout << "nobjects = " << nobjects << endl;
     waitKey();

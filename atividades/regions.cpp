@@ -21,12 +21,13 @@ int main(int argc, char **argv)
         cout << "A imagem nao foi carregada corretamente" << endl;
 
     namedWindow("janela", WINDOW_AUTOSIZE);
-    
+
     cout << "Insira os pontos do retângulo dentro dos limites da imagem ("
          << image.rows << "," << image.cols << "): ";
     cin >> p1.x >> p1.y >> p2.x >> p2.y;
 
     imshow("janela", image);
+    imwrite("grayscale.png", image);
     waitKey();
 
     for (int i = p1.x; i < p2.x; i++)
@@ -38,6 +39,7 @@ int main(int argc, char **argv)
     }
 
     imshow("janela", image);
+    imwrite("negativo_grayscale.png", image);
     waitKey();
 
     image = imread(argv[1], CV_LOAD_IMAGE_COLOR);
@@ -46,10 +48,10 @@ int main(int argc, char **argv)
 
     imshow("janela", image);
     waitKey();
-    
-    val[0] = 255;   //B
-    val[1] = 255;   //G
-    val[2] = 255;   //R
+
+    val[0] = 255; //B
+    val[1] = 255; //G
+    val[2] = 255; //R
 
     for (int i = p1.x; i < p2.x; i++)
     {
@@ -60,6 +62,7 @@ int main(int argc, char **argv)
     }
 
     imshow("janela", image);
+    imwrite("negativo_color.png", image);
     waitKey();
     return 0;
 }
