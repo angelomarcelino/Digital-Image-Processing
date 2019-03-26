@@ -635,13 +635,13 @@ $ ./&lt;nome_arquivo&gt; &lt;caminho_para_imagem&gt;</code></pre>
 </div>
 <div id="entrada-regions" class="imageblock left">
 <div class="content">
-<img src="../atividades/person-smartphone-office-table.jpeg" alt="Entrada do programa" width="300" height="200">
+<img src="../atividades/imgs/person-smartphone-office-table.jpeg" alt="Entrada do programa" width="300" height="200">
 </div>
 <div class="title">Figure 1. Entrada do programa</div>
 </div>
 <div id="grayscale-regions" class="imageblock center">
 <div class="content">
-<img src="../atividades/grayscale.png" alt="Converção tom de cinza" width="300" height="200">
+<img src="../atividades/imgs/grayscale.png" alt="Converção tom de cinza" width="300" height="200">
 </div>
 <div class="title">Figure 2. Conversão para grayscale</div>
 </div>
@@ -650,13 +650,13 @@ $ ./&lt;nome_arquivo&gt; &lt;caminho_para_imagem&gt;</code></pre>
 </div>
 <div id="negativo-rgb-regions" class="imageblock left">
 <div class="content">
-<img src="../atividades/negativo_color.png" alt="Negativo com RGB" width="300" height="200">
+<img src="../atividades/imgs/negativo_color.png" alt="Negativo com RGB" width="300" height="200">
 </div>
 <div class="title">Figure 3. Negativo com RGB</div>
 </div>
 <div id="negativo-grayscale-regions" class="imageblock">
 <div class="content">
-<img src="../atividades/negativo_grayscale.png" alt="Negativo de grayscale" width="300" height="200">
+<img src="../atividades/imgs/negativo_grayscale.png" alt="Negativo de grayscale" width="300" height="200">
 </div>
 <div class="title">Figure 4. Negativo do grayscale</div>
 </div>
@@ -679,7 +679,7 @@ altura e largura da imagem, e utilizando o construtor da classe <code><em>Rect</
 <p>Com o construtor da classe <code><em>Mat</em></code>, copia-se cada quadrante para uma matriz separada.</p>
 </li>
 <li>
-<p>Por fim, concatenam-se os quadrantes utilizando as funções <code><em>vconcat()</em></code> e <code><em>hconcat()</em></code> na imagem, como descreve o código <a href="../atividades/trocaregioes.cpp" target="_blank" rel="noopener">trocaregioes.cpp</a> abaixo:</p>
+<p>Por fim, concatenam-se os quadrantes utilizando as funções <code><em>vconcat()</em></code> e <code><em>hconcat()</em></code> na imagem, como descreve o código <a href="../atividades/imgs/trocaregioes.cpp" target="_blank" rel="noopener">trocaregioes.cpp</a> abaixo:</p>
 </li>
 </ul>
 </div>
@@ -734,27 +734,38 @@ altura e largura da imagem, e utilizando o construtor da classe <code><em>Rect</
 </div>
 <div id="entrada-trocaregioes" class="imageblock left">
 <div class="content">
-<img src="../atividades/windows_live_square.jpg" alt="Entrada do programa">
+<img src="../atividades/imgs/windows_live_square.jpg" alt="Entrada do programa">
 </div>
 <div class="title">Figure 5. Entrada do programa</div>
 </div>
-<div id="saida-trocaregioes" class="imageblock left">
+<div id="saida-trocaregioes" class="imageblock">
 <div class="content">
-<img src="../atividades/regioestrocadas.png" alt="Saída do programa">
+<img src="../atividades/imgs/regioestrocadas.png" alt="Saída do programa">
 </div>
 <div class="title">Figure 6. Saída com regiões trocadas</div>
+</div>
+<div class="paragraph">
+<p>.</p>
 </div>
 </div>
 <div class="sect2">
 <h3 id="_1_3_preenchendo_regiões">1.3. Preenchendo regiões</h3>
-
+<div class="paragraph">
+<p>Este algoritmo tem a função de contar as bolhas que possuem buracos e as que não possuem buracos, eliminando as que tocam as bordas.</p>
+</div>
+<div class="paragraph">
+<p>Primeiramente, a exclusão dos objetos que tocam as bordas foi realizada percorrendo-se as primeiras e últimas linhas e colunas da imagem a procura de objetos e, em seguida, preecehendo-os com o valor <em>default</em> de fundo.</p>
+</div>
+<div class="paragraph">
+<p>Assim, pega-se o ponto (0.0) da imagem e aplica o algoritmo <em>floodfill</em> neste ponto com a cor de <em>background</em> que será utilizado para preencher todo o fundo da imagem. Como é suposto que os objetos são aréas com cor em <em>grayscale</em> de 255 e os buracos são da mesma cor do fundo antigo, 0, resta então contabilizar</p>
+</div>
 </div>
 </div>
 </div>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2019-03-26 16:04:54 -0300
+Last updated 2019-03-26 17:52:19 -0300
 </div>
 </div>
 <script type="text/x-mathjax-config">

@@ -66,6 +66,7 @@ int main(int argc, char **argv)
         }
     }
     imshow("image", image);
+    imwrite("bolhas_borda.png", image);
     waitKey();
     // mudar o fundo
     floodFill(image, cvPoint(0, 0), BKGROUND);
