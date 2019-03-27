@@ -753,11 +753,197 @@ altura e largura da imagem, e utilizando o construtor da classe <code><em>Rect</
 <div class="paragraph">
 <p>Este algoritmo tem a função de contar as bolhas que possuem buracos e as que não possuem buracos, eliminando as que tocam as bordas.</p>
 </div>
-<div class="paragraph">
-<p>Primeiramente, a exclusão dos objetos que tocam as bordas foi realizada percorrendo-se as primeiras e últimas linhas e colunas da imagem a procura de objetos e, em seguida, preecehendo-os com o valor <em>default</em> de fundo.</p>
+<div id="entrada-rotulacao" class="imageblock">
+<div class="content">
+<img src="../atividades/imgs/bolhas.png" alt="Entrada do programa">
+</div>
+<div class="title">Figure 7. Entrada do programa</div>
 </div>
 <div class="paragraph">
-<p>Assim, pega-se o ponto (0.0) da imagem e aplica o algoritmo <em>floodfill</em> neste ponto com a cor de <em>background</em> que será utilizado para preencher todo o fundo da imagem. Como é suposto que os objetos são aréas com cor em <em>grayscale</em> de 255 e os buracos são da mesma cor do fundo antigo, 0, resta então contabilizar</p>
+<p>Primeiramente, a exclusão dos objetos que tocam as bordas foi realizada percorrendo-se as primeiras e últimas linhas e colunas da imagem a procura de objetos e, em seguida, preecehendo-os com o valor de fundo usando a função <code><em>floodFill()</em></code>.</p>
+</div>
+<div id="semborda-rotulacao" class="imageblock">
+<div class="content">
+<img src="../atividades/imgs/bolhas_borda.png" alt="Entrada sem borda">
+</div>
+<div class="title">Figure 8. Entrada sem objetos de borda</div>
+</div>
+<div class="paragraph">
+<p>Assim, pega-se o ponto (0.0) da imagem e aplica o algoritmo <em>floodfill</em> neste ponto com a cor de <em>background</em> que será utilizada para preencher todo o fundo da imagem. Como é suposto que os objetos são aréas com cor em <em>grayscale</em> de 255 e os buracos são da mesma cor do fundo antigo, 0, resta então contabilizar quantos objetos existem e quantos deles possuem buracos, seguindo o algoritmo descrito abaixo:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Caso encotre um buraco com um objeto associado, contabilize o objeto com buraco e preencha o objeto com a nova cor de fundo, por fim, preecher o buraco achado com a cor de fundo.</p>
+</li>
+<li>
+<p>Caso encontre um buraco sem objeto associado, preencha-o com a nova cor de fundo.</p>
+</li>
+<li>
+<p>Por fim, contabilize os objetos restantes, preenchendo-os com a cor de fundo.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Este processo pode ser visualizado nas figuras abaixo:</p>
+</div>
+<div id="semfundo-rotulacao" class="imageblock left">
+<div class="content">
+<img src="../atividades/imgs/bolhas_fundo.png" alt="Novo background">
+</div>
+<div class="title">Figure 9. Imagem com novo fundo</div>
+</div>
+<div id="semburacos-rotulacao" class="imageblock left">
+<div class="content">
+<img src="../atividades/imgs/bolhas_semburacos.png" alt="Sem buracos">
+</div>
+<div class="title">Figure 10. Imagem sem buracos</div>
+</div>
+<div id="saida-rotulacao" class="imageblock">
+<div class="content">
+<img src="../atividades/imgs/bolhas_result.png" alt="Saida do programa">
+</div>
+<div class="title">Figure 11. Saida do programa</div>
+</div>
+<div class="paragraph">
+<p>.</p>
+</div>
+<div class="paragraph">
+<p>O código implementado, <a href="../atividades/rotulacao.cpp" target="_blank" rel="noopener">rotulacao.cpp</a>, juntamente da execução do programa estão apresentados abaixo:</p>
+</div>
+<div class="listingblock">
+<div class="title">Listing 4. Execução do programa</div>
+<div class="content">
+<pre class="pygments highlight"><code data-lang="shell"><span></span>$ make rotulacao
+$ ./rotulacao bolhas.png
+<span class="tok-nv">nholes</span> <span class="tok-o">=</span> <span class="tok-m">7</span>
+<span class="tok-nv">nobjects</span> <span class="tok-o">=</span> <span class="tok-m">14</span></code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">Listing 5. rotulacao.cpp</div>
+<div class="content">
+<pre class="pygments highlight"><code data-lang="c++"><span></span><span class="tok-cp">#include</span> <span class="tok-cpf">&lt;iostream&gt;</span><span class="tok-cp"></span>
+<span class="tok-cp">#include</span> <span class="tok-cpf">&lt;stdio.h&gt;</span><span class="tok-cp"></span>
+<span class="tok-cp">#include</span> <span class="tok-cpf">&lt;opencv2/opencv.hpp&gt;</span><span class="tok-cp"></span>
+
+<span class="tok-k">using</span> <span class="tok-k">namespace</span> <span class="tok-n">std</span><span class="tok-p">;</span>
+<span class="tok-k">using</span> <span class="tok-k">namespace</span> <span class="tok-n">cv</span><span class="tok-p">;</span>
+
+<span class="tok-cp">#define BKGROUND 140</span>
+
+<span class="tok-kt">int</span> <span class="tok-nf">main</span><span class="tok-p">(</span><span class="tok-kt">int</span> <span class="tok-n">argc</span><span class="tok-p">,</span> <span class="tok-kt">char</span> <span class="tok-o">**</span><span class="tok-n">argv</span><span class="tok-p">)</span>
+<span class="tok-p">{</span>
+    <span class="tok-n">Mat</span> <span class="tok-n">image</span><span class="tok-p">,</span> <span class="tok-n">mask</span><span class="tok-p">;</span>
+    <span class="tok-kt">int</span> <span class="tok-n">width</span><span class="tok-p">,</span> <span class="tok-n">height</span><span class="tok-p">;</span>
+    <span class="tok-kt">int</span> <span class="tok-n">nobjects</span><span class="tok-p">,</span> <span class="tok-n">nholes</span><span class="tok-p">;</span>
+
+    <span class="tok-n">nobjects</span> <span class="tok-o">=</span> <span class="tok-n">nholes</span> <span class="tok-o">=</span> <span class="tok-mi">0</span><span class="tok-p">;</span>
+
+    <span class="tok-n">CvPoint</span> <span class="tok-n">p</span><span class="tok-p">;</span>
+    <span class="tok-n">image</span> <span class="tok-o">=</span> <span class="tok-n">imread</span><span class="tok-p">(</span><span class="tok-n">argv</span><span class="tok-p">[</span><span class="tok-mi">1</span><span class="tok-p">],</span> <span class="tok-n">CV_LOAD_IMAGE_GRAYSCALE</span><span class="tok-p">);</span>
+
+    <span class="tok-k">if</span> <span class="tok-p">(</span><span class="tok-o">!</span><span class="tok-n">image</span><span class="tok-p">.</span><span class="tok-n">data</span><span class="tok-p">)</span>
+    <span class="tok-p">{</span>
+        <span class="tok-n">std</span><span class="tok-o">::</span><span class="tok-n">cout</span> <span class="tok-o">&lt;&lt;</span> <span class="tok-s">&quot;imagem nao carregou corretamente</span><span class="tok-se">\n</span><span class="tok-s">&quot;</span><span class="tok-p">;</span>
+        <span class="tok-k">return</span> <span class="tok-p">(</span><span class="tok-o">-</span><span class="tok-mi">1</span><span class="tok-p">);</span>
+    <span class="tok-p">}</span>
+    <span class="tok-n">width</span> <span class="tok-o">=</span> <span class="tok-n">image</span><span class="tok-p">.</span><span class="tok-n">size</span><span class="tok-p">().</span><span class="tok-n">width</span><span class="tok-p">;</span>
+    <span class="tok-n">height</span> <span class="tok-o">=</span> <span class="tok-n">image</span><span class="tok-p">.</span><span class="tok-n">size</span><span class="tok-p">().</span><span class="tok-n">height</span><span class="tok-p">;</span>
+
+    <span class="tok-n">p</span><span class="tok-p">.</span><span class="tok-n">x</span> <span class="tok-o">=</span> <span class="tok-mi">0</span><span class="tok-p">;</span>
+    <span class="tok-n">p</span><span class="tok-p">.</span><span class="tok-n">y</span> <span class="tok-o">=</span> <span class="tok-mi">0</span><span class="tok-p">;</span>
+
+    <span class="tok-c1">// busca objetos na borda de cima e de baixo</span>
+    <span class="tok-k">for</span> <span class="tok-p">(</span><span class="tok-kt">int</span> <span class="tok-n">col</span> <span class="tok-o">=</span> <span class="tok-mi">0</span><span class="tok-p">;</span> <span class="tok-n">col</span> <span class="tok-o">&lt;</span> <span class="tok-n">width</span><span class="tok-p">;</span> <span class="tok-n">col</span><span class="tok-o">++</span><span class="tok-p">)</span>
+    <span class="tok-p">{</span>
+        <span class="tok-k">if</span> <span class="tok-p">(</span><span class="tok-n">image</span><span class="tok-p">.</span><span class="tok-n">at</span><span class="tok-o">&lt;</span><span class="tok-n">uchar</span><span class="tok-o">&gt;</span><span class="tok-p">(</span><span class="tok-mi">0</span><span class="tok-p">,</span> <span class="tok-n">col</span><span class="tok-p">)</span> <span class="tok-o">==</span> <span class="tok-mi">255</span><span class="tok-p">)</span>
+        <span class="tok-p">{</span>
+            <span class="tok-c1">// achou um objeto</span>
+            <span class="tok-n">p</span><span class="tok-p">.</span><span class="tok-n">x</span> <span class="tok-o">=</span> <span class="tok-n">col</span><span class="tok-p">;</span>
+            <span class="tok-n">p</span><span class="tok-p">.</span><span class="tok-n">y</span> <span class="tok-o">=</span> <span class="tok-mi">0</span><span class="tok-p">;</span>
+            <span class="tok-n">floodFill</span><span class="tok-p">(</span><span class="tok-n">image</span><span class="tok-p">,</span> <span class="tok-n">p</span><span class="tok-p">,</span> <span class="tok-mi">0</span><span class="tok-p">);</span>
+        <span class="tok-p">}</span>
+        <span class="tok-k">if</span> <span class="tok-p">(</span><span class="tok-n">image</span><span class="tok-p">.</span><span class="tok-n">at</span><span class="tok-o">&lt;</span><span class="tok-n">uchar</span><span class="tok-o">&gt;</span><span class="tok-p">(</span><span class="tok-n">height</span> <span class="tok-o">-</span> <span class="tok-mi">1</span><span class="tok-p">,</span> <span class="tok-n">col</span><span class="tok-p">)</span> <span class="tok-o">==</span> <span class="tok-mi">255</span><span class="tok-p">)</span>
+        <span class="tok-p">{</span>
+            <span class="tok-c1">// achou um objeto</span>
+            <span class="tok-n">p</span><span class="tok-p">.</span><span class="tok-n">x</span> <span class="tok-o">=</span> <span class="tok-n">col</span><span class="tok-p">;</span>
+            <span class="tok-n">p</span><span class="tok-p">.</span><span class="tok-n">y</span> <span class="tok-o">=</span> <span class="tok-n">height</span> <span class="tok-o">-</span> <span class="tok-mi">1</span><span class="tok-p">;</span>
+            <span class="tok-n">floodFill</span><span class="tok-p">(</span><span class="tok-n">image</span><span class="tok-p">,</span> <span class="tok-n">p</span><span class="tok-p">,</span> <span class="tok-mi">0</span><span class="tok-p">);</span>
+        <span class="tok-p">}</span>
+    <span class="tok-p">}</span>
+    <span class="tok-c1">// busca objetos na bordas da esq e dir</span>
+    <span class="tok-k">for</span> <span class="tok-p">(</span><span class="tok-kt">int</span> <span class="tok-n">row</span> <span class="tok-o">=</span> <span class="tok-mi">0</span><span class="tok-p">;</span> <span class="tok-n">row</span> <span class="tok-o">&lt;</span> <span class="tok-n">height</span><span class="tok-p">;</span> <span class="tok-n">row</span><span class="tok-o">++</span><span class="tok-p">)</span>
+    <span class="tok-p">{</span>
+        <span class="tok-k">if</span> <span class="tok-p">(</span><span class="tok-n">image</span><span class="tok-p">.</span><span class="tok-n">at</span><span class="tok-o">&lt;</span><span class="tok-n">uchar</span><span class="tok-o">&gt;</span><span class="tok-p">(</span><span class="tok-n">row</span><span class="tok-p">,</span> <span class="tok-mi">0</span><span class="tok-p">)</span> <span class="tok-o">==</span> <span class="tok-mi">255</span><span class="tok-p">)</span>
+        <span class="tok-p">{</span>
+            <span class="tok-c1">// achou um objeto</span>
+            <span class="tok-n">p</span><span class="tok-p">.</span><span class="tok-n">x</span> <span class="tok-o">=</span> <span class="tok-mi">0</span><span class="tok-p">;</span>
+            <span class="tok-n">p</span><span class="tok-p">.</span><span class="tok-n">y</span> <span class="tok-o">=</span> <span class="tok-n">row</span><span class="tok-p">;</span>
+            <span class="tok-n">floodFill</span><span class="tok-p">(</span><span class="tok-n">image</span><span class="tok-p">,</span> <span class="tok-n">p</span><span class="tok-p">,</span> <span class="tok-mi">0</span><span class="tok-p">);</span>
+        <span class="tok-p">}</span>
+        <span class="tok-k">if</span> <span class="tok-p">(</span><span class="tok-n">image</span><span class="tok-p">.</span><span class="tok-n">at</span><span class="tok-o">&lt;</span><span class="tok-n">uchar</span><span class="tok-o">&gt;</span><span class="tok-p">(</span><span class="tok-n">row</span><span class="tok-p">,</span> <span class="tok-n">width</span> <span class="tok-o">-</span> <span class="tok-mi">1</span><span class="tok-p">)</span> <span class="tok-o">==</span> <span class="tok-mi">255</span><span class="tok-p">)</span>
+        <span class="tok-p">{</span>
+            <span class="tok-c1">// achou um objeto</span>
+            <span class="tok-n">p</span><span class="tok-p">.</span><span class="tok-n">x</span> <span class="tok-o">=</span> <span class="tok-n">width</span> <span class="tok-o">-</span> <span class="tok-mi">1</span><span class="tok-p">;</span>
+            <span class="tok-n">p</span><span class="tok-p">.</span><span class="tok-n">y</span> <span class="tok-o">=</span> <span class="tok-n">row</span><span class="tok-p">;</span>
+            <span class="tok-n">floodFill</span><span class="tok-p">(</span><span class="tok-n">image</span><span class="tok-p">,</span> <span class="tok-n">p</span><span class="tok-p">,</span> <span class="tok-mi">0</span><span class="tok-p">);</span>
+        <span class="tok-p">}</span>
+    <span class="tok-p">}</span>
+    <span class="tok-n">imshow</span><span class="tok-p">(</span><span class="tok-s">&quot;image&quot;</span><span class="tok-p">,</span> <span class="tok-n">image</span><span class="tok-p">);</span>
+    <span class="tok-n">imwrite</span><span class="tok-p">(</span><span class="tok-s">&quot;bolhas_borda.png&quot;</span><span class="tok-p">,</span> <span class="tok-n">image</span><span class="tok-p">);</span>
+    <span class="tok-n">waitKey</span><span class="tok-p">();</span>
+    <span class="tok-c1">// mudar o fundo</span>
+    <span class="tok-n">floodFill</span><span class="tok-p">(</span><span class="tok-n">image</span><span class="tok-p">,</span> <span class="tok-n">cvPoint</span><span class="tok-p">(</span><span class="tok-mi">0</span><span class="tok-p">,</span> <span class="tok-mi">0</span><span class="tok-p">),</span> <span class="tok-n">BKGROUND</span><span class="tok-p">);</span>
+    <span class="tok-n">imshow</span><span class="tok-p">(</span><span class="tok-s">&quot;image&quot;</span><span class="tok-p">,</span> <span class="tok-n">image</span><span class="tok-p">);</span>
+    <span class="tok-n">imwrite</span><span class="tok-p">(</span><span class="tok-s">&quot;bolhas_fundo.png&quot;</span><span class="tok-p">,</span> <span class="tok-n">image</span><span class="tok-p">);</span>
+    <span class="tok-n">waitKey</span><span class="tok-p">();</span>
+    <span class="tok-c1">// encontrando buracos</span>
+    <span class="tok-k">for</span> <span class="tok-p">(</span><span class="tok-kt">int</span> <span class="tok-n">row</span> <span class="tok-o">=</span> <span class="tok-mi">0</span><span class="tok-p">;</span> <span class="tok-n">row</span> <span class="tok-o">&lt;</span> <span class="tok-n">height</span><span class="tok-p">;</span> <span class="tok-n">row</span><span class="tok-o">++</span><span class="tok-p">)</span>
+    <span class="tok-p">{</span>
+        <span class="tok-k">for</span> <span class="tok-p">(</span><span class="tok-kt">int</span> <span class="tok-n">col</span> <span class="tok-o">=</span> <span class="tok-mi">0</span><span class="tok-p">;</span> <span class="tok-n">col</span> <span class="tok-o">&lt;</span> <span class="tok-n">width</span><span class="tok-p">;</span> <span class="tok-n">col</span><span class="tok-o">++</span><span class="tok-p">)</span>
+        <span class="tok-p">{</span>
+            <span class="tok-k">if</span> <span class="tok-p">(</span><span class="tok-n">image</span><span class="tok-p">.</span><span class="tok-n">at</span><span class="tok-o">&lt;</span><span class="tok-n">uchar</span><span class="tok-o">&gt;</span><span class="tok-p">(</span><span class="tok-n">row</span><span class="tok-p">,</span> <span class="tok-n">col</span><span class="tok-p">)</span> <span class="tok-o">==</span> <span class="tok-mi">0</span><span class="tok-p">)</span>
+            <span class="tok-p">{</span>
+                <span class="tok-k">if</span> <span class="tok-p">(</span><span class="tok-n">image</span><span class="tok-p">.</span><span class="tok-n">at</span><span class="tok-o">&lt;</span><span class="tok-n">uchar</span><span class="tok-o">&gt;</span><span class="tok-p">(</span><span class="tok-n">row</span><span class="tok-p">,</span> <span class="tok-n">col</span> <span class="tok-o">-</span> <span class="tok-mi">1</span><span class="tok-p">)</span> <span class="tok-o">==</span> <span class="tok-mi">255</span><span class="tok-p">)</span>
+                <span class="tok-p">{</span>
+                    <span class="tok-c1">// achou um buraco</span>
+                    <span class="tok-n">nholes</span><span class="tok-o">++</span><span class="tok-p">;</span>
+                    <span class="tok-n">p</span><span class="tok-p">.</span><span class="tok-n">x</span> <span class="tok-o">=</span> <span class="tok-n">col</span> <span class="tok-o">-</span> <span class="tok-mi">1</span><span class="tok-p">;</span>
+                    <span class="tok-n">p</span><span class="tok-p">.</span><span class="tok-n">y</span> <span class="tok-o">=</span> <span class="tok-n">row</span><span class="tok-p">;</span>
+                    <span class="tok-n">floodFill</span><span class="tok-p">(</span><span class="tok-n">image</span><span class="tok-p">,</span> <span class="tok-n">p</span><span class="tok-p">,</span> <span class="tok-n">BKGROUND</span><span class="tok-p">);</span>
+                <span class="tok-p">}</span>
+                <span class="tok-n">p</span><span class="tok-p">.</span><span class="tok-n">x</span> <span class="tok-o">=</span> <span class="tok-n">col</span><span class="tok-p">;</span>
+                <span class="tok-n">p</span><span class="tok-p">.</span><span class="tok-n">y</span> <span class="tok-o">=</span> <span class="tok-n">row</span><span class="tok-p">;</span>
+                <span class="tok-n">floodFill</span><span class="tok-p">(</span><span class="tok-n">image</span><span class="tok-p">,</span> <span class="tok-n">p</span><span class="tok-p">,</span> <span class="tok-n">BKGROUND</span><span class="tok-p">);</span>
+            <span class="tok-p">}</span>
+        <span class="tok-p">}</span>
+    <span class="tok-p">}</span>
+    <span class="tok-n">imshow</span><span class="tok-p">(</span><span class="tok-s">&quot;image&quot;</span><span class="tok-p">,</span> <span class="tok-n">image</span><span class="tok-p">);</span>
+    <span class="tok-n">imwrite</span><span class="tok-p">(</span><span class="tok-s">&quot;bolhas_semburacos.png&quot;</span><span class="tok-p">,</span> <span class="tok-n">image</span><span class="tok-p">);</span>
+    <span class="tok-n">waitKey</span><span class="tok-p">();</span>
+    <span class="tok-c1">// encontrando regioes</span>
+    <span class="tok-k">for</span> <span class="tok-p">(</span><span class="tok-kt">int</span> <span class="tok-n">row</span> <span class="tok-o">=</span> <span class="tok-mi">1</span><span class="tok-p">;</span> <span class="tok-n">row</span> <span class="tok-o">&lt;</span> <span class="tok-n">height</span><span class="tok-p">;</span> <span class="tok-n">row</span><span class="tok-o">++</span><span class="tok-p">)</span>
+    <span class="tok-p">{</span>
+        <span class="tok-k">for</span> <span class="tok-p">(</span><span class="tok-kt">int</span> <span class="tok-n">col</span> <span class="tok-o">=</span> <span class="tok-mi">1</span><span class="tok-p">;</span> <span class="tok-n">col</span> <span class="tok-o">&lt;</span> <span class="tok-n">width</span><span class="tok-p">;</span> <span class="tok-n">col</span><span class="tok-o">++</span><span class="tok-p">)</span>
+        <span class="tok-p">{</span>
+            <span class="tok-k">if</span> <span class="tok-p">(</span><span class="tok-n">image</span><span class="tok-p">.</span><span class="tok-n">at</span><span class="tok-o">&lt;</span><span class="tok-n">uchar</span><span class="tok-o">&gt;</span><span class="tok-p">(</span><span class="tok-n">row</span><span class="tok-p">,</span> <span class="tok-n">col</span><span class="tok-p">)</span> <span class="tok-o">==</span> <span class="tok-mi">255</span><span class="tok-p">)</span>
+            <span class="tok-p">{</span>
+                <span class="tok-n">nobjects</span><span class="tok-o">++</span><span class="tok-p">;</span>
+                <span class="tok-n">p</span><span class="tok-p">.</span><span class="tok-n">x</span> <span class="tok-o">=</span> <span class="tok-n">col</span><span class="tok-p">;</span>
+                <span class="tok-n">p</span><span class="tok-p">.</span><span class="tok-n">y</span> <span class="tok-o">=</span> <span class="tok-n">row</span><span class="tok-p">;</span>
+                <span class="tok-n">floodFill</span><span class="tok-p">(</span><span class="tok-n">image</span><span class="tok-p">,</span> <span class="tok-n">p</span><span class="tok-p">,</span> <span class="tok-n">BKGROUND</span><span class="tok-p">);</span>
+            <span class="tok-p">}</span>
+        <span class="tok-p">}</span>
+    <span class="tok-p">}</span>
+    <span class="tok-n">imshow</span><span class="tok-p">(</span><span class="tok-s">&quot;image&quot;</span><span class="tok-p">,</span> <span class="tok-n">image</span><span class="tok-p">);</span>
+    <span class="tok-n">imwrite</span><span class="tok-p">(</span><span class="tok-s">&quot;bolhas_result.png&quot;</span><span class="tok-p">,</span> <span class="tok-n">image</span><span class="tok-p">);</span>
+    <span class="tok-n">cout</span> <span class="tok-o">&lt;&lt;</span> <span class="tok-s">&quot;nholes = &quot;</span> <span class="tok-o">&lt;&lt;</span> <span class="tok-n">nholes</span> <span class="tok-o">&lt;&lt;</span> <span class="tok-n">endl</span><span class="tok-p">;</span>
+    <span class="tok-n">cout</span> <span class="tok-o">&lt;&lt;</span> <span class="tok-s">&quot;nobjects = &quot;</span> <span class="tok-o">&lt;&lt;</span> <span class="tok-n">nobjects</span> <span class="tok-o">&lt;&lt;</span> <span class="tok-n">endl</span><span class="tok-p">;</span>
+    <span class="tok-n">waitKey</span><span class="tok-p">();</span>
+    <span class="tok-k">return</span> <span class="tok-mi">0</span><span class="tok-p">;</span>
+<span class="tok-p">}</span></code></pre>
+</div>
 </div>
 </div>
 </div>
@@ -765,7 +951,7 @@ altura e largura da imagem, e utilizando o construtor da classe <code><em>Rect</
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2019-03-26 17:52:19 -0300
+Last updated 2019-03-27 10:10:56 -0300
 </div>
 </div>
 <script type="text/x-mathjax-config">

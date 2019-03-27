@@ -89,6 +89,54 @@ image::../atividades/imgs/regioestrocadas.png[Saída do programa]
 
 Este algoritmo tem a função de contar as bolhas que possuem buracos e as que não possuem buracos, eliminando as que tocam as bordas.
 
-Primeiramente, a exclusão dos objetos que tocam as bordas foi realizada percorrendo-se as primeiras e últimas linhas e colunas da imagem a procura de objetos e, em seguida, preecehendo-os com o valor _default_ de fundo.
+.Entrada do programa
+[#entrada-rotulacao]
+image::../atividades/imgs/bolhas.png[Entrada do programa]
 
-Assim, pega-se o ponto (0.0) da imagem e aplica o algoritmo _floodfill_ neste ponto com a cor de _background_ que será utilizado para preencher todo o fundo da imagem. Como é suposto que os objetos são aréas com cor em _grayscale_ de 255 e os buracos são da mesma cor do fundo antigo, 0, resta então contabilizar
+Primeiramente, a exclusão dos objetos que tocam as bordas foi realizada percorrendo-se as primeiras e últimas linhas e colunas da imagem a procura de objetos e, em seguida, preecehendo-os com o valor de fundo usando a função `_floodFill()_`.
+
+.Entrada sem objetos de borda
+[#semborda-rotulacao]
+image::../atividades/imgs/bolhas_borda.png[Entrada sem borda]
+
+
+Assim, pega-se o ponto (0.0) da imagem e aplica o algoritmo _floodfill_ neste ponto com a cor de _background_ que será utilizada para preencher todo o fundo da imagem. Como é suposto que os objetos são aréas com cor em _grayscale_ de 255 e os buracos são da mesma cor do fundo antigo, 0, resta então contabilizar quantos objetos existem e quantos deles possuem buracos, seguindo o algoritmo descrito abaixo:
+
+* Caso encotre um buraco com um objeto associado, contabilize o objeto com buraco e preencha o objeto com a nova cor de fundo, por fim, preecher o buraco achado com a cor de fundo.
+* Caso encontre um buraco sem objeto associado, preencha-o com a nova cor de fundo.
+* Por fim, contabilize os objetos restantes, preenchendo-os com a cor de fundo.
+
+Este processo pode ser visualizado nas figuras abaixo:
+
+.Imagem com novo fundo
+[#semfundo-rotulacao]
+image::../atividades/imgs/bolhas_fundo.png[Novo background,role="left"]
+
+.Imagem sem buracos
+[#semburacos-rotulacao]
+image::../atividades/imgs/bolhas_semburacos.png[Sem buracos,role="left"]
+
+.Saida do programa
+[#saida-rotulacao]
+image::../atividades/imgs/bolhas_result.png[Saida do programa]
+
+.
+
+O código implementado, link:../atividades/rotulacao.cpp[rotulacao.cpp^], juntamente da execução do programa estão apresentados abaixo: 
+
+[source, shell]
+.Execução do programa
+----
+$ make rotulacao
+$ ./rotulacao bolhas.png
+nholes = 7
+nobjects = 14
+----
+
+[source, c++]
+.rotulacao.cpp
+----
+include::../atividades/rotulacao.cpp[]
+----
+
+=== 1.4 Manipulação de Histogramas
