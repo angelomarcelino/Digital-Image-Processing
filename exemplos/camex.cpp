@@ -10,7 +10,7 @@ int main(int, char **)
 
     Mat edges;
     namedWindow("edges", 1);
-    for (;;)
+    while (1)
     {
         Mat frame;
         cap >> frame; // get a new frame from camera
@@ -18,8 +18,7 @@ int main(int, char **)
         GaussianBlur(edges, edges, Size(7, 7), 1.5, 1.5);
         Canny(edges, edges, 0, 30, 3);
         imshow("edges", edges);
-        std::cout << "oi\n";
-        if (waitKey() >= 0)
+        if (waitKey(30) == 'a')
             break;
     }
     // the camera will be deinitialized automatically in VideoCapture destructor

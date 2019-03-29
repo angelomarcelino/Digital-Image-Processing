@@ -65,7 +65,7 @@ A atividade propõe a construção de um programa que recebe uma imagem, determi
 * Obtêm-se os quadrantes da imagem defindo o tamanho da _grid_ como metade da 
 altura e largura da imagem, e utilizando o construtor da classe `_Rect_`, seleciona um retângulo da matriz igual ao quadrante selecionado.
 * Com o construtor da classe `_Mat_`, copia-se cada quadrante para uma matriz separada. 
-* Por fim, concatenam-se os quadrantes utilizando as funções `_vconcat()_` e `_hconcat()_` na imagem, como descreve o código link:../atividades/imgs/trocaregioes.cpp[trocaregioes.cpp^] abaixo:
+* Por fim, concatenam-se os quadrantes utilizando as funções `_vconcat()_` e `_hconcat()_` na imagem, como descreve o código link:../atividades/trocaregioes.cpp[trocaregioes.cpp^] abaixo:
 
 [source, c++]
 ._trocaregioes.cpp_

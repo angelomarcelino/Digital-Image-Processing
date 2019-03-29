@@ -6,7 +6,7 @@ using namespace std;
 
 int main(int argc, char **argv)
 {
-  Mat image;
+  Mat img;
   int width, height;
   VideoCapture cap;
   vector<Mat> planes;
@@ -38,8 +38,8 @@ int main(int argc, char **argv)
 
   while (1)
   {
-    cap >> image;
-    split(image, planes);
+    cap >> img;
+    split(img, planes);
     calcHist(&planes[0], 1, 0, Mat(), histR, 1,
              &nbins, &histrange,
              uniform, acummulate);
@@ -73,10 +73,11 @@ int main(int argc, char **argv)
            Point(i, histh - cvRound(histB.at<float>(i))),
            Scalar(255, 0, 0), 1, 8, 0);
     }
-    histImgR.copyTo(image(Rect(0, 0, nbins, histh)));
-    histImgG.copyTo(image(Rect(0, histh, nbins, histh)));
-    histImgB.copyTo(image(Rect(0, 2 * histh, nbins, histh)));
-    imshow("image", image);
+    histImgR.copyTo(img(Rect(0, 0, nbins, histh)));
+    histImgG.copyTo(img(Rect(0, histh, nbins, histh)));
+    histImgB.copyTo(img(Rect(0, 2 * histh, nbins, histh)));
+
+    imshow("img", img);
     if (waitKey(30) == 'a')
       break;
   }
