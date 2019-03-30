@@ -58,7 +58,7 @@ image::../atividades/imgs/negativo_grayscale.png[Negativo de grayscale,300,200]
 
 .
 
-=== 1.2. Trocar regiões
+=== 1.2. Trocar Regiões
 
 A atividade propõe a construção de um programa que recebe uma imagem, determina e troca os quadrantes diagonalmente numa imagem de saída. Para resolver este problema foi seguido o seguinte algoritmo:
 
@@ -85,7 +85,7 @@ image::../atividades/imgs/regioestrocadas.png[Saída do programa]
 
 .
 
-=== 1.3. Preenchendo regiões
+=== 1.3. Preenchendo Regiões
 
 Este algoritmo tem a função de contar as bolhas que possuem buracos e as que não possuem buracos, eliminando as que tocam as bordas.
 
@@ -139,4 +139,29 @@ nobjects = 14
 include::../atividades/rotulacao.cpp[]
 ----
 
-=== 1.4 Manipulação de Histogramas
+=== 1.4. Equalização de Histogramas
+
+"Um histograma é uma contagem de dados onde se organiza as ocorrências por faixas de valores predefinidos. Em se tratando de imagens digitais em tons de cinza, por exemplo, costuma-se associar um histograma com a contagem de ocorrências de cada um dos possíveis tons em uma imagem. A grosso modo, o histograma oferece uma estimativa da probabilidade de ocorrência dos tons de cinza na imagem."footnote:[Texto original do site https://agostinhobritojr.github.io/tutorial/pdi/[Introdução ao processamento digital de imagens com OpenCV^]]
+
+O que a equalização de um histograma faz é, basicamente, estender o intervalo dessas probabilidades.
+
+Para tanto, o código link:../atividades/equalize.cpp[equalize.cpp^] foi criado para implementar este conceito para uma imagem em escala de cinza, mostrando tanto seu histograma e imagem em modo normal quanto ambos equalizados.
+
+[source, c++]
+.equalize.cpp
+----
+include::../atividades/equalize.cpp[]
+----
+
+=== 1.5. Detector de Movimento
+
+Com o conceito de histograma mais fixado, foi implementado, então um programa detector de movimento utilizando esses conhecimentos.
+
+Como o histograma é um tipo de descrição para uma imagem, a sua comparação com outras pode identificar a similaridade entre elas. Seguindo esse conceito, o código link:../atividades/motiondetector.cpp[motiondetector.cpp^] implementa essa comparação entre _frames_ de um vídeo e caso esta comparação seja maior que um limite pré-definido, um quadro branco aparecerá no vídeo e o console mostrará a quantidade de frames nos quais algum movimento foi detectado e qual foi o valor de comparação entre o retorno da a função `_compareHist(currentHist, previousHist, 1)_` subtraída do limite definido.
+
+[source, c++]
+.motiondetector.cpp
+----
+include::../atividades/motiondetector.cpp[]
+----
+
