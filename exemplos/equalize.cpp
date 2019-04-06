@@ -1,14 +1,13 @@
+#include <stdio.h>
+#include <iostream>
 #include "opencv2/highgui/highgui.hpp"
 #include "opencv2/imgproc/imgproc.hpp"
-#include <iostream>
-#include <stdio.h>
 
 using namespace cv;
 using namespace std;
 
 /**  @function main */
-int main(int argc, char **argv)
-{
+int main(int argc, char **argv) {
     Mat src, dst;
 
     char *source_window = "Source image";
@@ -17,8 +16,7 @@ int main(int argc, char **argv)
     /// Load image
     src = imread(argv[1], 1);
 
-    if (!src.data)
-    {
+    if (!src.data) {
         cout << "Usage: ./Histogram_Demo <path_to_image>" << endl;
         return -1;
     }

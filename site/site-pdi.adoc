@@ -153,6 +153,19 @@ Para tanto, o código link:../atividades/equalize.cpp[equalize.cpp^] foi criado 
 include::../atividades/equalize.cpp[]
 ----
 
+Estre progrmam tem saídas como as seguintes:
+
+.Saida com luz normal
+[#histogram-low]
+image::../atividades/imgs/histogram_low.jpg[Low light histogram,role="left"]
+
+.Saida com muita luz
+[#histogram-high]
+image::../atividades/imgs/histogram_high.jpg[High light histogram]
+
+.
+
+
 === 1.5. Detector de Movimento
 
 Com o conceito de histograma mais fixado, foi implementado, então um programa detector de movimento utilizando esses conhecimentos.
