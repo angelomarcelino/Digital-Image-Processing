@@ -165,7 +165,6 @@ image::../atividades/imgs/histogram_high.jpg[High light histogram]
 
 .
 
-
 === 1.5. Detector de Movimento
 
 Com o conceito de histograma mais fixado, foi implementado, então um programa detector de movimento utilizando esses conhecimentos.
@@ -178,3 +177,34 @@ Como o histograma é um tipo de descrição para uma imagem, a sua comparação 
 include::../atividades/motiondetector.cpp[]
 ----
 
+=== 1.6. Filtragem espacial I
+
+O seguinte programa link:../atividades/laplgauss.cpp[laplgauss.cpp^] permite que seja calculado o Laplaciano do Gaussiano (LoG) das imagens capturadas. Para tanto, foi criada uma opção que permite a aplicação da máscara gaussiana, seguida da laplaciana (3x3). Além disto, foi adicionado também a máscara do LoG (5x5). Para efeito de comparação, o programa implementado dispõe das opções:
+
+* Laplaciano 3x3
+* Laplaciano do Gaussiano 3x3
+* Laplaciano do Gaussiano 5x5
+
+[source, c++]
+.laplgauss.cpp
+----
+include::../atividades/laplgauss.cpp[]
+----
+
+Estre progrmam tem saídas como as seguintes:
+
+.Saida laplaciano puro (3x3)
+[#laplacian]
+image::../atividades/imgs/laplace.jpg[Laplaciano puro,role="left"]
+
+.Saida laplaciano do gaussiano
+[#laplgauss]
+image::../atividades/imgs/laplgauss.jpg[Laplaciano do gaussiano]
+
+.Saida laplaciano do gaussiano (5x5)
+[#laplgauss5]
+image::../atividades/imgs/laplgauss5.jpg[Laplaciano do gaussiano 5x5]
+
+.
+
+É interessante notar que a máscara do LoG 5x5 produz uma definição de bordas bastante significativa em comparação com as máscaras 3x3, tanto que bordas suaves como as de uma tatuagem aparecem nítidamente nesta máscara.
