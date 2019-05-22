@@ -40,7 +40,10 @@ int main(int argvc, char** argv) {
     namedWindow("addweighted", 1);
 
     sprintf(TrackbarName, "Alpha x %d", alfa_slider_max);
-    createTrackbar(TrackbarName, "addweighted", &alfa_slider, alfa_slider_max,
+    createTrackbar(TrackbarName, 
+                   "addweighted", 
+                   &alfa_slider, 
+                   alfa_slider_max,
                    on_trackbar_blend);
     on_trackbar_blend(alfa_slider, 0);
 
