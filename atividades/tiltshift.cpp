@@ -1,207 +1,156 @@
 #include <iostream>
 #include <opencv2/opencv.hpp>
-#include <cmath>
-
-#define BLUR 20
+#include <math.h>
 
 using namespace cv;
 using namespace std;
 
-double alpha, focus, position;
+// GLOBAL VARIABLES
 
-int alpha_slider = 20;
-int alpha_slider_max = 99;
+int blurValue = 7 ;
+int blur_slider = 0;
+int blur_slider_max = 10;
 
-int focus_slider = 30;
-int focus_slider_max = 100;
+int MAX = 100;
+double ponderacao = 6;
+int ponderacao_slider = 0;
 
-int position_slider = 50;
-int position_slider_max = 100;
+int top_slider = 0;
+int posicao_vertical = 0;
+
+int tamanho_faixa = 20;
+int altura_slider = 0;
+
+Mat img1, img2, alpha, beta1;
+int height;
 
 char TrackbarName[50];
 
-Mat img, blurredImg, saturatedImg, desfoque, desfoqueInv, result;
-float altReg, d, posVert;
+// FUNCTIONS
 
-void getBlurredImg() {
-	Mat aux1, aux2, step1, step2;
-	
-    float media[] = { 
-        1,1,1,
-        1,1,1,
-        1,1,1 
-    };
-
-	Mat mask(3,3,CV_32F, media), mask1;
-	scaleAdd(mask, 1/9.0, Mat::zeros(3,3,CV_32F), mask1);
-	swap(mask, mask1);
-
-	aux1 = img.clone();
-	aux1.convertTo(step1, CV_32F);
-
-	for(int i = 0; i < BLUR; i++){
-    	filter2D(step1, step2, step1.depth(), mask, Point(1,1), 0);
-    	step2 = abs(step2);
-    	step1 = step2.clone();
-	}
-
-	aux2 = step2.clone();
-    aux2.convertTo(blurredImg, CV_8U);
+void refresh(){
+    Mat srcImg, blurImg, tiltshiftImg;
+    img1.convertTo(srcImg, CV_32FC3);
+    img2.convertTo(blurImg, CV_32FC3);
+    multiply(srcImg, alpha, srcImg);
+    multiply(blurImg, beta1, blurImg);
+    add(srcImg, blurImg, tiltshiftImg);
+    tiltshiftImg.convertTo(tiltshiftImg, CV_8UC3);
+    imshow("tiltshift", tiltshiftImg);
 }
 
-void increaseSaturation() {
-    saturatedImg = img.clone();
-
-  	cvtColor(img, img, CV_RGB2HSV);
-	cvtColor(saturatedImg, saturatedImg, CV_RGB2HSV);
-
-	for (int i = 0; i < img.rows ; i++) {
-      for(int j = 0; j < img.cols; j++) {
-			if(img.at<Vec3b>(i,j)[1] <= 100){
-				saturatedImg.at<Vec3b>(i,j)[1] = img.at<Vec3b>(i,j)[1] * 2;
-			}
-			if(img.at<Vec3b>(i,j)[1] <= 200 && img.at<Vec3b>(i,j)[1] > 100){
-				saturatedImg.at<Vec3b>(i,j)[1] = img.at<Vec3b>(i,j)[1] * 1.3;
-			}
-			if(img.at<Vec3b>(i,j)[1] > 200){
-				saturatedImg.at<Vec3b>(i,j)[1] = img.at<Vec3b>(i,j)[1] * 2;
-			}
-		}
-	}
-
-	cvtColor(img, img, CV_HSV2RGB);
-	cvtColor(saturatedImg, saturatedImg, CV_HSV2RGB);
+void blur(int blurValue){
+    Mat aux, mask;
+    float media[] = {1,1,1,
+                     1,1,1,
+                     1,1,1};
+    // Creates the Mask matrix
+    mask = Mat(3, 3, CV_32F, media); 
+    scaleAdd(mask, 1/9.0, Mat::zeros(3,3,CV_32F), mask);
+    // "img1" is used otherwise the blur will always increase
+    img1.convertTo(aux, CV_32F); 
+    for (int i = 0; i < blurValue; i++) {
+        filter2D(aux, aux, aux.depth(), mask, Point(1, 1), 0);
+    }
+    aux=abs(aux);
+    aux.convertTo(img2, CV_8UC3);
 }
 
-void multiplicaPonderacao(){
-	for (int i = 0; i < img.rows ; i++) {
-      for(int j = 0; j < img.cols; j++) {
-			saturatedImg.at<Vec3b>(i,j)[0] = (int)((float)saturatedImg.at<Vec3b>(i,j)[0] * ((float)desfoque.at<uchar>(i,j)/255.0));
-			saturatedImg.at<Vec3b>(i,j)[1] = (int)((float)saturatedImg.at<Vec3b>(i,j)[1] * ((float)desfoque.at<uchar>(i,j)/255.0));
-			saturatedImg.at<Vec3b>(i,j)[2] = (int)((float)saturatedImg.at<Vec3b>(i,j)[2] * ((float)desfoque.at<uchar>(i,j)/255.0));
+void tiltShiftCalc() {
+    int l1 = -tamanho_faixa/2;
+    int l2 = -l1;
 
- 			blurredImg.at<Vec3b>(i,j)[0] = (int)((float)blurredImg.at<Vec3b>(i,j)[0] * ((float)desfoqueInv.at<uchar>(i,j)/255.0));
-			blurredImg.at<Vec3b>(i,j)[1] = (int)((float)blurredImg.at<Vec3b>(i,j)[1] * ((float)desfoqueInv.at<uchar>(i,j)/255.0));
-			blurredImg.at<Vec3b>(i,j)[2] = (int)((float)blurredImg.at<Vec3b>(i,j)[2] * ((float)desfoqueInv.at<uchar>(i,j)/255.0));
- 		}
-	}
+    alpha = Mat::zeros(img1.rows, img1.cols, CV_32F);
+    beta1 = Mat::zeros(img1.rows, img1.cols, CV_32F);
+    int i, j;
+    for (i = 0; i < alpha.rows; i++) {
+        int x = i - (posicao_vertical + tamanho_faixa/2);
+        float alphaValue = 0.5f * (tanh((x - l1)/ponderacao) 
+                                    - tanh((x - l2)/ponderacao));
+        for (j = 0; j < alpha.cols; j++) {
+            alpha.at<float>(i, j) = alphaValue;
+            beta1.at<float>(i, j) = 1 - alphaValue;
+        }
+    }
+    Mat auxA[] = {alpha, alpha, alpha};
+    Mat auxB[] = {beta1, beta1, beta1};
+    merge(auxA, 3, alpha);
+    merge(auxB, 3, beta1);
+    // imshow("alpha", alpha);
+    // imshow("beta", beta1);
+    refresh();
 }
 
-void getPonderacao() {
-  	float x;
-  	float conta;
-  	float altReg2, posVert2, d2;
+// TRACKBARS
 
-  	altReg2 = altReg * img.rows;
-  	posVert2 = posVert * img.rows;
-  	d2 = d * img.rows;
-  	float l1 = img.rows - posVert2 - altReg2/2 ;
-  	float l2 = img.rows - posVert2 + altReg2/2 ;
-
-  	for (int i = 0; i < img.rows ; i++) {
-      for(int j = 0; j < img.cols; j++) {
-			x = i;
-			conta = (int)((0.5)*(tanh((x-l1)/d2) - tanh((x-l2)/d2))*255.0);
-
-			desfoque.at<uchar>(i,j)    = conta;
-			desfoqueInv.at<uchar>(i,j) = 255 - conta;
-		}
-	}
+void on_trackbar_blur(int, void*){
+    blurValue = blur_slider;
+    // Blurs image
+    blur(blurValue);
+    // Updates window
+    refresh();
 }
 
-void changeImg() {
-	//Prepara a matriz de ponderacao de acordo com a imagem original:
-	desfoque    = img.clone();
-	desfoqueInv = img.clone();
-	cvtColor(desfoque   , desfoque   , CV_RGB2GRAY);
-	cvtColor(desfoqueInv, desfoqueInv, CV_RGB2GRAY);
-
-	//Ramo 01: Gera a matriz saturada:
-	increaseSaturation();
-
-	//Ramo 02: Gera a matriz borrada:
-	getBlurredImg();
-
-	getPonderacao();
-	multiplicaPonderacao();
-	addWeighted(saturatedImg, 1, blurredImg, 1, 0.0, result);
-
-	imshow("Tilt Shift", result);
+void on_trackbar_ponderacao(int, void*){
+    ponderacao = (double) ponderacao_slider;
+    if (ponderacao < 1) {
+        ponderacao = 1;
+    }
+    tiltShiftCalc();
 }
 
-void on_trackbar_alpha(int, void*) {
-    alpha = (float) alpha_slider/alpha_slider_max;
-
-    altReg = alpha;
-
-    changeImg();
+void on_trackbar_posicaoVertical(int, void*){
+    posicao_vertical = top_slider*height/MAX;
+    tiltShiftCalc();
 }
 
-void on_trackbar_focus(int, void*) {
-    focus = (float) focus_slider/focus_slider_max;
-    
-    d = focus;
-
-    changeImg();
-}
-
-void on_trackbar_position(int, void*) {
-    position = (double) position_slider/position_slider_max;
-    
-    posVert = position;
-
-    changeImg();
-}
-
-int main(int argc, char **argv) {
-    if(argc < 2) {
-        cout << "Argumentos faltando!\nUso: ./tiltshift <caminho_para_imagem>\n";
-        return -1;
+void on_trackbar_altura_regiao(int, void*) {
+    tamanho_faixa = altura_slider*height/MAX;
+    if (tamanho_faixa == 0) {
+        tamanho_faixa = 1;
     }
 
-    float media[] = {
-        1, 1, 1,
-        1, 1, 1,
-        1, 1, 1
-    };
+    if (tamanho_faixa > height) {
+        tamanho_faixa = height;
+    }
+    tiltShiftCalc();
+}
 
-    img = imread(argv[1], IMREAD_COLOR);
-    
-    namedWindow("Tilt Shift", WINDOW_KEEPRATIO);
-    resizeWindow("Tilt Shift", 800, 600);
+// MAIN
 
-    getBlurredImg();
-    increaseSaturation();
+int main(int argvc, char** argv){
+    img1 = imread(argv[1], IMREAD_COLOR);
+    height = img1.size().height;
+    img2 = img1.clone();
+    img2.convertTo(img2, CV_8UC3);
 
-    sprintf(TrackbarName, "Alpha: %d", alpha_slider_max);
-    createTrackbar(
-      TrackbarName,
-      "Tilt Shift",
-      &alpha_slider,
-      alpha_slider_max,
-      on_trackbar_alpha  
-    );
-    
-    sprintf(TrackbarName, "Foco: %d", focus_slider_max);
-    createTrackbar(
-        TrackbarName,
-        "Tilt Shift",
-        &focus_slider,
-        focus_slider_max,
-        on_trackbar_focus
-    );
+    blur(7);
 
-    sprintf(TrackbarName, "Centro Focal: %d", position_slider_max);
-    createTrackbar(
-        TrackbarName,
-        "Tilt Shift",
-        &position_slider,
-        position_slider_max,
-        on_trackbar_position
-    );
+    namedWindow("tiltshift", 1);
 
-    imshow("Tilt Shift", saturatedImg);
-
+    // sprintf( TrackbarName, "Blur Value");
+    // createTrackbar( TrackbarName, "Blur",
+    //                 &blur_slider,
+    //                 blur_slider_max,
+    //                 on_trackbar_blur);
+    // on_trackbar_blur(blur_slider, 0);
+    sprintf( TrackbarName, "Posição Vertical");
+    createTrackbar( TrackbarName, "tiltshift",
+                    &top_slider,
+                    MAX,
+                    on_trackbar_posicaoVertical );
+    sprintf( TrackbarName, "Altura da região");
+    createTrackbar( TrackbarName, "tiltshift",
+                    &altura_slider,
+                    MAX,
+                    on_trackbar_altura_regiao);
+    sprintf( TrackbarName, "Ponderação");
+    createTrackbar( TrackbarName, "tiltshift",
+                    &ponderacao_slider,
+                    MAX,
+                    on_trackbar_ponderacao);
+    tiltShiftCalc();
     waitKey(0);
+
     return 0;
 }

@@ -7,10 +7,6 @@ using namespace std;
 
 // GLOBAL VARIABLES
 
-int blurValue = 7 ;
-int blur_slider = 0;
-int blur_slider_max = 10;
-
 int MAX = 100;
 double ponderacao = 6;
 int ponderacao_slider = 0;
@@ -76,20 +72,10 @@ void tiltShiftCalc() {
     Mat auxB[] = {beta1, beta1, beta1};
     merge(auxA, 3, alpha);
     merge(auxB, 3, beta1);
-    imshow("alpha", alpha);
-    imshow("beta", beta1);
     refresh();
 }
 
 // TRACKBARS
-
-void on_trackbar_blur(int, void*){
-    blurValue = blur_slider;
-    // Blurs image
-    blur(blurValue);
-    // Updates window
-    refresh();
-}
 
 void on_trackbar_ponderacao(int, void*){
     ponderacao = (double) ponderacao_slider;
@@ -99,7 +85,7 @@ void on_trackbar_ponderacao(int, void*){
     tiltShiftCalc();
 }
 
-void on_trackbar_posicaoVertical(int, void *){
+void on_trackbar_posicaoVertical(int, void*){
     posicao_vertical = top_slider*height/MAX;
     tiltShiftCalc();
 }
@@ -119,20 +105,24 @@ void on_trackbar_altura_regiao(int, void*) {
 // MAIN
 
 int main(int argvc, char** argv){
-    img1 = imread(argv[1], IMREAD_COLOR);
-    height = img1.size().height;
-    img2 = img1.clone();
+    VideoCapture video;
+    video.open(argv[1]);
 
-    blur(7);
+    if(!video.isOpened()){
+        cout << "Error opening video stream or file" << endl;
+        return -1;
+    }
+
+    height = video.get(CV_CAP_PROP_FRAME_HEIGHT);
+    cout << "Altura = " << height << "\n";
 
     namedWindow("tiltshift", 1);
 
-    sprintf( TrackbarName, "Blur Value");
-    createTrackbar( TrackbarName, "Blur",
-                    &blur_slider,
-                    blur_slider_max,
-                    on_trackbar_blur);
-    on_trackbar_blur(blur_slider, 0);
+    sprintf( TrackbarName, "Posição Vertical");
+    createTrackbar( TrackbarName, "tiltshift",
+                    &top_slider,
+                    MAX,
+                    on_trackbar_posicaoVertical );
     sprintf( TrackbarName, "Altura da região");
     createTrackbar( TrackbarName, "tiltshift",
                     &altura_slider,
@@ -143,13 +133,41 @@ int main(int argvc, char** argv){
                     &ponderacao_slider,
                     MAX,
                     on_trackbar_ponderacao);
-    sprintf( TrackbarName, "Posição Vertical");
-    createTrackbar( TrackbarName, "tiltshift",
-                    &top_slider,
-                    MAX,
-                    on_trackbar_posicaoVertical );
-    tiltShiftCalc();
-    waitKey(0);
 
+    int frameCount = 0;
+    Mat discardFrame;
+    while(true){
+        video >> discardFrame;
+        
+        if (discardFrame.empty()){
+            video.release();
+            video.open(argv[1]);
+            if(!video.isOpened()){
+            cout << "Error opening video stream or file" << endl;
+            return -1;
+            }
+            frameCount = 0;
+            continue;
+        }
+
+        frameCount++;
+        
+        if(frameCount%2 != 0){
+            img1 = discardFrame.clone();  
+            img2 = img1.clone();
+
+            blur(7);
+            tiltShiftCalc();
+        }
+        
+        char key = (char)waitKey(30);
+        if (key == 27) break;
+    }
+
+    // When everything done, release the video capture object
+    video.release();
+ 
+    // Closes all the frames
+    destroyAllWindows();
     return 0;
 }
