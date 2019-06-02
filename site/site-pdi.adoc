@@ -208,3 +208,154 @@ image::../atividades/imgs/laplgauss5.jpg[Laplaciano do gaussiano 5x5]
 .
 
 É interessante notar que a máscara do LoG 5x5 produz uma definição de bordas bastante significativa em comparação com as máscaras 3x3, tanto que bordas suaves como as de uma tatuagem aparecem nítidamente nesta máscara.
+
+=== 1.6. Filtragem espacial II
+
+A ativadade propõe a criação de uma interface que proporcione ao usuário aplicar o efeito Tilf shift em imgaens, para tal criada duas imagens a partir da imagem de entrada, uma usada apenas para a multiplicação ponderada e outra usada para armazenar o borramento da imagem de entrada. Ao final é feita a a multiplicação ponderada dos pixels seguindo o controle de desfoque feito manualmente a partir de sliders presentes na interface.
+
+O seguinte programa link:../atividades/tiltshift.cpp[tiltshift.cpp^] permite que seja calculado os pesos para que seja reproduzido o efeito de Tilt Shift.
+
+[source, c++]
+.tiltshift.cpp
+----
+include::../atividades/tiltshift.cpp[]
+----
+
+Estre progrmam tem a execução como se segue:
+
+.Entrada do Programa
+[#tiltshift_in]
+image::../atividades/imgs/skyline.jpg[Entrada do programa, role="left"]
+
+.Saida esperada, após mudanças manuais
+[#tiltshift_out]
+image::../atividades/imgs/tiltshift.jpg[Saída do Programa]
+
+.
+
+O conceito de do programa link:../atividades/tiltshift.cpp[tiltshift.cpp^] também pode ser aplicado à videos, assim o programa link:../atividades/tiltshiftvideo.cpp[tiltshift.cpp^] foi criado, mudando somente a função `_main.cpp_` :
+
+[source, c++]
+.tiltshiftvideo.cpp
+----
+// MAIN
+
+int main(int argvc, char** argv){
+    VideoCapture video;
+    video.open(argv[1]);
+
+    if(!video.isOpened()){
+        cout << "Error opening video stream or file" << endl;
+        return -1;
+    }
+
+    height = video.get(CV_CAP_PROP_FRAME_HEIGHT);
+    cout << "Altura = " << height << "\n";
+
+    namedWindow("tiltshift", 1);
+
+    sprintf( TrackbarName, "Posição Vertical");
+    createTrackbar( TrackbarName, "tiltshift",
+                    &top_slider,
+                    MAX,
+                    on_trackbar_posicaoVertical );
+    sprintf( TrackbarName, "Altura da região");
+    createTrackbar( TrackbarName, "tiltshift",
+                    &altura_slider,
+                    MAX,
+                    on_trackbar_altura_regiao);
+    sprintf( TrackbarName, "Ponderação");
+    createTrackbar( TrackbarName, "tiltshift",
+                    &ponderacao_slider,
+                    MAX,
+                    on_trackbar_ponderacao);
+
+    int frameCount = 0;
+    Mat discardFrame;
+    while(true){
+        video >> discardFrame;
+
+        if (discardFrame.empty()){
+            video.release();
+            video.open(argv[1]);
+            if(!video.isOpened()){
+            cout << "Error opening video stream or file" << endl;
+            return -1;
+            }
+            frameCount = 0;
+            continue;
+        }
+
+        frameCount++;
+
+        if(frameCount%2 != 0){
+            img1 = discardFrame.clone();
+            img2 = img1.clone();
+
+            blur(7);
+            tiltShiftCalc();
+        }
+
+        char key = (char)waitKey(30);
+        if (key == 27) break;
+    }
+
+    // When everything done, release the video capture object
+    video.release();
+
+    // Closes all the frames
+    destroyAllWindows();
+    return 0;
+}
+----
+
+== 2. Segunda unidade
+
+Neste tópico estão descritos as atividades realizadas referentes a segunda unidade da disciplina DCA0445.
+Para a compilação dos códigos referentes à esta unidade, é necessário possuir, no mesmo diretório do arquivo `_.cpp_` o arquivo link:../atividades/Makefile[Makefile^], e executar os seguintes comandos no seu console:
+
+._Makefile_
+[source, shell]
+----
+$ make <nome_arquivo>
+$ ./<nome_arquivo> <caminho_para_imagem>
+----
+
+=== 2.1. Filtragem no domínio da Frequência
+
+O exercíco propõe a criação de um programa que auxilie no melhoramento de imagens com iluminação irregular utilizando o filtro homomórfico, para tal foi criada uma interface com sliders para ajustar os paramentros do filtro e são mostradas em janelas diferentes a imagem com a aplicação do filtro, a imagem original e o filtro que está sendo aplicado.
+
+O programa link:../atividades/homomorfico.cpp[homomorfico.cpp^], está descrito abaixo:
+
+[source, c++]
+.homomorfico.cpp
+----
+include::../atividades/homomorfico.cpp[]
+----
+
+.Execução do Programa
+[#homomorfico]
+image::../atividades/imgs/homomorfico.jpg[Exemplo do programa, role="left"]
+
+.
+
+=== 2.2. Detecção de bordas com o algoritmo de Canny
+
+O exercício solicita a implementação de um programa para usar as bordas produzidas pelo algoritmo de Canny para melhorar a qualidade da imagem pontilhista gerada, para tal utiliza-se a posição dos pixels de borda encontrados pelo algoritmo de Canny para desenhar pontos nos respectivos locais na imagem gerada através do programa link:../atividades/cannyPoints.cpp[cannyPoints.cpp^]:
+
+
+[source, c++]
+.cannyPoints.cpp
+----
+include::../atividades/cannyPoints.cpp[]
+----
+
+As entradas e execução do programa estão exemplificadas a seguir:
+
+.Entrada do Programa
+[#canny_in]
+image::../atividades/imgs/sunset.jpg[Entrada do programa, role="left"]
+
+.Saida esperada, após mudanças manuais
+[#canny_out]
+image::../atividades/imgs/canny.png[Saída do Programa]

@@ -37,6 +37,7 @@ void refresh(){
     add(srcImg, blurImg, tiltshiftImg);
     tiltshiftImg.convertTo(tiltshiftImg, CV_8UC3);
     imshow("tiltshift", tiltshiftImg);
+    imwrite("tiltshift.jpg", tiltshiftImg);
 }
 
 void blur(int blurValue){
